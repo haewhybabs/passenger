@@ -3,12 +3,11 @@
 namespace App\Console\Commands;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Console\Command;
-use League\Csv\Reader;
 use ZipArchive;
 use Illuminate\Support\Facades\Log;
 use App\Services\PostcodeService;
-
-
+use League\Csv\Statement;
+use League\Csv\Reader;
 
 class ImportPostcodes extends Command
 {
@@ -56,8 +55,21 @@ class ImportPostcodes extends Command
                 $csvFile = storage_path('app/postcodes/ukpostcodes.csv');
                 $csv = Reader::createFromPath($csvFile);
                 $csv->setHeaderOffset(0);
-                $recordsArray = iterator_to_array($csv->getRecords());
-                $this->postcodeService->importPostcodes($recordsArray);
+                
+                $chunkSize = 1000;
+                $offset=0;
+                // Process the CSV data in chunks
+                while ($chunk = (new Statement())->limit($chunkSize, $offset)->process($csv)) {
+            
+                    // Convert the chunk iterator to an array
+                    $recordsArray = iterator_to_array($chunk);
+                    Log::channel('command')->info('Postcodes data received', $recordsArray);
+                    // Pass the chunk data to the PostcodeService for import
+                    $this->postcodeService->importPostcodes($recordsArray);
+            
+                    $offset += $chunkSize;
+                }
+
                 $this->info('Postcodes imported successfully.');
             } else {
                 $this->error('Failed to unzip the downloaded file.');

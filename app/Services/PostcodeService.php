@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\PostcodeRepository;
+use Illuminate\Support\Facades\Log;
 
 class PostcodeService
 {
