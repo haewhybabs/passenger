@@ -5,7 +5,7 @@
 ### Installation
 * git clone https://github.com/haewhybabs/passenger.git
 * composer install
-* set up the env (preferably rename to.env)
+* set up the env (preferably rename .env.example  to .env)
 * php artisan key:generate
 * php artisan migrate (to set up the database)
 * php artisan serve (to start the server)
