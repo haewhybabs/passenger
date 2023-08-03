@@ -11,7 +11,7 @@
 
 
 
-### Run command with 
+### Run command with to download the postcodes and save it to the db
 php artisan postcodes:import
 
 
