@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use App\Http\Controllers\PostcodeController;
+
+Route::get('postcodes/partial-match', [PostcodeController::class, 'partialMatch']);
+Route::get('postcodes/nearby', [PostcodeController::class, 'nearbyPostcodes']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

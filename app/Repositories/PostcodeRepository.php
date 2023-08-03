@@ -15,12 +15,13 @@ class PostcodeRepository
 
     public function getNearbyPostcodes($latitude, $longitude, $radius)
     {
-        return DB::table('postcodes')
-            ->selectRaw('*, (6371 * ACOS(COS(RADIANS(:latitude)) * COS(RADIANS(latitude)) * COS(RADIANS(longitude) - RADIANS(:longitude)) + SIN(RADIANS(:latitude)) * SIN(RADIANS(latitude)))) AS distance')
-            ->having('distance', '<', $radius)
-            ->orderBy('distance')
-            ->setBindings(['latitude' => $latitude, 'longitude' => $longitude])
-            ->get();
+        return DB::table(function ($query) use ($latitude, $longitude) {
+            $query->selectRaw('*, (6371 * ACOS(COS(RADIANS(?)) * COS(RADIANS(latitude)) * COS(RADIANS(longitude) - RADIANS(?)) + SIN(RADIANS(?)) * SIN(RADIANS(latitude)))) AS distance', [$latitude, $longitude, $latitude]);
+            $query->from('post_codes');
+        })
+        ->where('distance', '<', $radius)
+        ->orderBy('distance')
+        ->get();
     }
 
     public function updateOrCreateByPostcode($postcode, array $data)
